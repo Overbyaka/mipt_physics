@@ -1,4 +1,6 @@
 #%%
+import math
+
 import sympy as sp
 # Проверка наших уравнений
 x = sp.Function('x')
@@ -34,14 +36,16 @@ anim_f = sol_t(ts)
 def animate(frame):
     x = anim_f[frame]
     l = 20
+    h = 2;
 
-    line_1.set_data(*spring((0, 0), (x, 0), 25, 0.5))
-    line_2.set_data(*spring((l, 0), (x, 0), 25, 0.5))
+    #y координату находим с помощью теоремы Пифагора
+    line_1.set_data(*spring((0, 0), (x, x*h/l), 25, 0.5))
+    line_2.set_data(*spring((l, h), (x, x*h/l), 25, 0.5))
 
     return line_1, line_2
 
 fig = plt.figure()
-ax = plt.axes(xlim=(0, 20), ylim=(-2, 2))
+ax = plt.axes(xlim=(0, 20), ylim=(-2, 4))
 ax.set_aspect("equal", "box")
 line_1 = ax.plot([], [], lw=1)[0]
 line_2 = ax.plot([], [], lw=1)[0]
@@ -51,4 +55,4 @@ anim = FuncAnimation(fig, animate,
 
 plt.show()
 
-anim.save("2_springs.gif")
+anim.save("2_springs_2D.gif")
