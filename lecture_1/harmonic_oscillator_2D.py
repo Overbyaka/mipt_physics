@@ -3,22 +3,19 @@ import math
 
 import sympy as sp
 # Проверка наших уравнений
-x = sp.Function('x')
-y = sp.Function('y')
+xy = sp.Function('xy')
+
 # l - длина от одной стены, до другой, h - высота между пружинами
 t,k_1, k_2, m, d, l, h = sp.symbols('t, k_1, k_2, m, d, l, h')
-eqx = sp.Eq(-k_1*x(t) + k_2*(l-x(t)), m*x(t).diff(t,t))
-eqy = sp.Eq(-k_1*y(t) + k_2*(h-y(t)), m*y(t).diff(t,t))
+eq = sp.Eq(-k_1*xy(t) + k_2*(sp.sqrt(h*h + l*l)-xy(t)), m*xy(t).diff(t,t))
 
 # решает уравнение относительно t
 # с начальными условиями
-solx = sp.dsolve(eqx, ics={x(0): 10, sp.diff(x(t), t).subs(t,0): 7.5, })
-soly = sp.dsolve(eqy, ics={y(0): 1, sp.diff(y(t), t).subs(t,0): 1, })
-sol_tx = sp.lambdify(t, solx.rhs.subs({k_1: 3, k_2: 3, m:1, d:0.1, l: 20}))
-sol_ty= sp.lambdify(t, soly.rhs.subs({k_1: 3, k_2: 3, m:1, d:0.1, h: 2}))
+sol = sp.dsolve(eq, ics={xy(0): math.sqrt(2*2+20*20)/2, sp.diff(xy(t), t).subs(t,0): 5, })
+sol_t = sp.lambdify(t, sol.rhs.subs({k_1: 3, k_2: 3, m:1, d:0.1, l: 20, h: 2}))
 
 #%%
-sol_ty
+sol_t
 
 #%%
 import matplotlib
@@ -35,14 +32,17 @@ TOTAL_FRAMES = ANIM_TIME * FPS
 
 ts = np.linspace(0, ANIM_TIME, FPS * ANIM_TIME)
 
-anim_fx = sol_tx(ts)
-anim_fy = sol_ty(ts)
+anim_f = sol_t(ts)
 
 def animate(frame):
-    x = anim_fx[frame]
-    y = anim_fy[frame]
     l = 20
-    h = 2;
+    h = 2
+    cos = math.sqrt(1/(1+(h*h)/(l*l)))
+    sin = math.sqrt(1/(1+(l*l)/(h*h)))
+    #1+tg^2=1/cos^2
+    #1+ctg^2=1/sin^2
+    x = anim_f[frame]*cos
+    y = anim_f[frame]*sin
 
     line_1.set_data(*spring((0, 0), (x, y), 25, 0.5))
     line_2.set_data(*spring((l, h), (x, y), 25, 0.5))
