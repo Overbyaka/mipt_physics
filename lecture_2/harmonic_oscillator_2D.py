@@ -35,11 +35,11 @@ def dy(vy):
     dy = vy
     return dy
 def dvx(x, y, vx):
-    dvx = (-d*vx -k_1 * abs(s_1 + x) * (1 - 1 / math.sqrt((1 + x / s_1) ** 2 + (y / s_1) ** 2)) + k_2 * abs(s_2 - x) * (
+    dvx = (-d*vx -k_1 * (s_1 + x) * (1 - 1 / math.sqrt((1 + x / s_1) ** 2 + (y / s_1) ** 2)) + k_2 * (s_2 - x) * (
                 1 - 1 / math.sqrt((1 - x / s_2) ** 2 + (y / s_2) ** 2))) / m
     return dvx
 def dvy(x, y, vy):
-    dvy = (-d * vy + k_1 * abs(y) * (1 - 1 / math.sqrt((1 + x / s_1) ** 2 + (y / s_1) ** 2)) + k_2 * abs(y) * (
+    dvy = (-d * vy - k_1 * (y) * (1 - 1 / math.sqrt((1 + x / s_1) ** 2 + (y / s_1) ** 2)) - k_2 * (y) * (
                 1 - 1 / math.sqrt((1 - x / s_2) ** 2 + (y / s_2) ** 2)) - g)/m
     return dvy
 

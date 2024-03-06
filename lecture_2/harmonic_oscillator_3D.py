@@ -3,14 +3,14 @@ import math
 
 import sympy as sp
 # Начальные условия
-x = 2
-y = 2
+x = 0.5
+y = 1.5
 z = 1
 vx = 0
 vy = 0
 vz = 0
-s_1 = 2
-s_2 = 3
+s_1 = 0.5
+s_2 = 1.5
 k_1 = 9
 k_2 = 7
 m = 5
@@ -39,17 +39,17 @@ def dz(vz):
     dz = vz
     return dz
 def dvx(x, y, z, vx):
-    dvx = (-d*vx -k_1 * abs(s_1 + x) * (1 - 1 / math.sqrt((1 + x / s_1) ** 2 + (y / s_1) ** 2)) + k_2 * abs(s_2 - x) * (
-                1 - 1 / math.sqrt((1 - x / s_2) ** 2 + (y / s_2) ** 2))) / m
+    dvx = (-d * vx -k_1 * (s_1 + x) * (1 - s_1 / math.sqrt((s_1+x) ** 2 + y ** 2 + z**2)) +
+           k_2 * (s_2 - x) * (1 - s_2 / math.sqrt((s_2 - x) ** 2 + y ** 2 + z ** 2))) / m
     return dvx
 def dvy(x, y, z, vy):
-    dvy = (-d * vy - k_1 * abs(y) * (1 - 1 / math.sqrt((1 + x / s_1) ** 2 + (y / s_1) ** 2)) + k_2 * abs(y) * (
-                1 - 1 / math.sqrt((1 - x / s_2) ** 2 + (y / s_2) ** 2)))/m
+    dvy = (-d * vy - k_1 * y * (1 - s_1 / math.sqrt((s_1 + x) ** 2 + y ** 2 + z ** 2)) +
+           k_2 * y * (1 - s_2 / math.sqrt((s_2 - x) ** 2 + y ** 2 + z ** 2))) / m
     return dvy
 def dvz(x, y, z, vz):
-    dvy = (-d * vz + k_1 * abs(y) * (1 - 1 / math.sqrt((1 + x / s_1) ** 2 + (y / s_1) ** 2)) + k_2 * abs(y) * (
-                1 - 1 / math.sqrt((1 - x / s_2) ** 2 + (y / s_2) ** 2)) - g)/m
-    return dvy
+    dvz = (-d * vz + k_1 * z * (1 - s_1 / math.sqrt((s_1 + x) ** 2 + y ** 2 + z ** 2)) +
+           k_2 * z * (1 - s_2 / math.sqrt((s_2 - x) ** 2 + y ** 2 + z ** 2)) - g) / m
+    return dvz
 
 #RT4
 #F = ...
@@ -68,21 +68,21 @@ while t < t_max:
     dz2 = dz(vz + dvz1*h/2)
     dvx2 = dvx(x + dx1 * h / 2, y + dy1 * h / 2, z + dz1 * h / 2, vx + dvx1 * h / 2)
     dvy2 = dvy(x + dx1 * h / 2, y + dy1 * h / 2, z + dz1 * h / 2, vy + dvy1 * h / 2)
-    dvz2 = dvy(x + dx1 * h / 2, y + dy1 * h / 2, z + dz1 * h / 2, vy + dvz1 * h / 2)
+    dvz2 = dvy(x + dx1 * h / 2, y + dy1 * h / 2, z + dz1 * h / 2, vz + dvz1 * h / 2)
 
     dx3 = dx(vx + dvx2*h/2)
     dy3 = dy(vy + dvy2*h/2)
     dz3 = dz(vz + dvz2*h/2)
     dvx3 = dvx(x + dx2 * h / 2, y + dy2 * h / 2, z + dz2 * h / 2, vx + dvx2 * h / 2)
     dvy3 = dvy(x + dx2 * h / 2, y + dy2 * h / 2, z + dz2 * h / 2, vy + dvy2 * h / 2)
-    dvz3 = dvy(x + dx2 * h / 2, y + dy2 * h / 2, z + dz2 * h / 2, vy + dvz2 * h / 2)
+    dvz3 = dvy(x + dx2 * h / 2, y + dy2 * h / 2, z + dz2 * h / 2, vz + dvz2 * h / 2)
 
     dx4 = dx(vx + dvx3*h)
     dy4 = dy(vy + dvy3*h)
     dz4 = dz(vy + dvz3*h)
     dvx4 = dvx(x + dx3 * h, y + dy3 * h, z + dz3 * h, vx + dvx3 * h)
     dvy4 = dvy(x + dx3 * h, y + dy3 * h, z + dz3 * h, vy + dvy3 * h)
-    dvz4 = dvy(x + dx3 * h, y + dy3 * h, z + dz3 * h, vy + dvz3 * h)
+    dvz4 = dvy(x + dx3 * h, y + dy3 * h, z + dz3 * h, vz + dvz3 * h)
 
     #сохраняем значения
     time.append(t)
@@ -113,22 +113,33 @@ FPS = 45
 FRAMETIME = 1 / FPS # in seconds
 TOTAL_FRAMES = ANIM_TIME * FPS
 
+fig = plt.figure()
+ax = fig.add_subplot(projection="3d")
+ax.set(xlim3d=(-2, 2), xlabel='X')
+ax.set(ylim3d=(-4, 4), ylabel='Y')
+ax.set(zlim3d=(-5, 4), zlabel='Z')
+
+line_1, = ax.plot([], [], [], color = "red", lw=1)
+line_2, = ax.plot([], [], [], color = "blue", lw=1)
+
+def init():
+    line_1.set_data([], [])
+    line_1.set_3d_properties([])
+    line_2.set_data([], [])
+    line_2.set_3d_properties([])
+    return line_1, line_2
 def animate(frame):
 
-    line_1.set_data(*spring((4, 0, 0), (x_values[frame], y_values[frame], z_values[frame]), 10, 0.5))
-    line_2.set_data(*spring((0, 3, 0), (x_values[frame], y_values[frame], z_values[frame]), 15, 0.5))
+    line_1.set_data([-2, x_values[frame]], [0, y_values[frame]])
+    line_1.set_3d_properties([0, z_values[frame]])
+    line_2.set_data([2, x_values[frame]], [0, y_values[frame]])
+    line_2.set_3d_properties([0, z_values[frame]])
 
     return line_1, line_2
 
-fig = plt.figure()
-ax = plt.axes(xlim=(-2, 2), ylim=(-5, 2))
-ax.set_aspect("equal", "box")
-line_1 = ax.plot([], [], lw=1)[0]
-line_2 = ax.plot([], [], lw=1)[0]
-
-anim = FuncAnimation(fig, animate,
+anim = FuncAnimation(fig, animate, init_func=init,
                      frames=TOTAL_FRAMES, interval=int(FRAMETIME*1000), blit=True)
 
 plt.show()
 
-anim.save("2_springs_2D.gif")
+anim.save("2_springs_3D.gif")
