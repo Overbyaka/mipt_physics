@@ -114,6 +114,5 @@ def animate(i):
     return c_a1, c_a2
 
 
-anim = FuncAnimation(fig, animate,
-                               frames=100000, interval=1, blit=True)
+anim = FuncAnimation(fig, animate, frames=100000, interval=1, blit=True)
 plt.show()

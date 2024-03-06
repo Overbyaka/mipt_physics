@@ -13,32 +13,36 @@ d = 0.5
 A = np.array([[0., 1],[-w**2,  - 2*d*w]])
 
 dt = 0.01
-T = 100
+T = 10
 iters = int(T/dt)
 x0 = np.array([2.,0.])
 
 # %%  Forward Euler
 
-xF = np.zeros([2, iters], dtype = np.float)
-tF = np.zeros([iters], dtype = np.float)
+xF = np.zeros([2, iters], dtype = np.float_)
+tF = np.zeros([iters], dtype = np.float_)
+EF = np.zeros([iters - 1], dtype = np.float_)
 xF[:,0] = x0
 tF[0] = 0
 for i in range (iters - 1):
     tF[i + 1] = i * dt
     xF[:, i + 1] = (np.eye(2) + A * dt).dot(xF[:, i])
+    EF[i] = xF[1, i]**2 + xF[0, i]**2
 
 plt.plot(tF, xF[0,:], c = 'r')
 plt.show()
 
 # %% Backward Euler
 
-xB = np.zeros([2, iters], dtype = np.float)
-tB = np.zeros([iters], dtype = np.float)
+xB = np.zeros([2, iters], dtype = np.float_)
+tB = np.zeros([iters], dtype = np.float_)
+EB = np.zeros([iters - 1], dtype = np.float_)
 xB[:,0] = x0
 tB[0] = 0
 for i in range (iters - 1):
     tB[i + 1] = i * dt
     xB[:, i + 1] = np.linalg.inv(np.eye(2) - A * dt).dot(xB[:, i])
+    EB[i] = xB[1, i]**2 + xB[0, i]**2
 
 
 
