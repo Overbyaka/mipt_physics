@@ -115,6 +115,7 @@ TOTAL_FRAMES = ANIM_TIME * FPS
 
 fig = plt.figure()
 ax = fig.add_subplot(projection="3d")
+ax.view_init(elev=15, azim=60, roll=0)
 ax.set(xlim3d=(-2, 2), xlabel='X')
 ax.set(ylim3d=(-4, 4), ylabel='Y')
 ax.set(zlim3d=(-5, 4), zlabel='Z')
